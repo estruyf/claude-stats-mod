@@ -28,6 +28,17 @@ claude plugin marketplace add estruyf/claude-stats-mod
 claude plugin install claude-stats@claude-stats-mod --scope user
 ```
 
+## Update
+
+Refresh the marketplace, then update the plugin:
+
+```sh
+claude plugin marketplace update claude-stats-mod
+claude plugin update claude-stats@claude-stats-mod
+```
+
+Run `/reload-plugins` in an open session (or restart the desktop app) to load the new version. Inside Claude Code you can also do this from `/plugin`, under the `claude-stats-mod` marketplace.
+
 ## Try it from a clone
 
 ```sh
@@ -53,3 +64,7 @@ Set them with `/config` or under `pluginConfigs["claude-stats"].options` in sett
 claude plugin validate .claude-plugin/plugin.json
 claude plugin test .
 ```
+
+Running with `--plugin-dir` hot-reloads the mod on every save, so there's no update step while developing.
+
+To release, bump `version` in `.claude-plugin/plugin.json` and push to `main`. `claude plugin update` compares that version, so a push without a bump isn't picked up as an update.
