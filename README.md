@@ -2,9 +2,13 @@
 
 A Claude Code mod that draws your usage limits and spend in the band above the prompt.
 
-```
-◔ 14% 5h · resets 1h7m   ◕ 83% 7d · resets 3h47m   $0.10 $1.25 today · $42.50 mo
-```
+**Claude Code desktop**
+
+![claude-stats in the Claude Code desktop app: rings for the 5h and 7d limits above the prompt](assets/desktop.png)
+
+**Terminal**
+
+![claude-stats in the Claude Code CLI: the 5h and 7d limits on one line above the prompt](assets/terminal.png)
 
 - **5h / 7d**: the subscription rate-limit windows from `$.session.usage()`, with a ring (desktop) or pie glyph (terminal) coloured green → amber (60%) → red (85%), and a countdown to the reset.
 - **Spend**: this session's cost, plus today and this month from [ccusage](https://github.com/ryoppippi/ccusage) (`ccusage daily --json --offline --since <first of month>`).
