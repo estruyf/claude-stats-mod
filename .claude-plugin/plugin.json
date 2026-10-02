@@ -1,6 +1,6 @@
 {
   "name": "claude-stats",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Usage limits (5h / 7d) and ccusage spend, drawn as a status band above the prompt.",
   "author": { "name": "Elio Struyf" },
   "types": "./types/index.d.ts",

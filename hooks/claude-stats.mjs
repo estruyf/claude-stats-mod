@@ -223,7 +223,8 @@ function terminalBand({ Box, Text }, limits, spend, now, columns) {
     if (wide) parts.push(Text({ dimColor: true, children: ` ${spend.rest}` }));
   }
 
-  return Box({ flexDirection: "row", paddingX: 1, children: parts });
+  // A blank row above, so the band doesn't run into the transcript.
+  return Box({ flexDirection: "row", marginTop: 1, paddingX: 1, children: parts });
 }
 
 // Single-width glyphs, so the line stays aligned in every terminal font.
