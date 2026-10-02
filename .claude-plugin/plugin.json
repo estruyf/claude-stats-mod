@@ -1,10 +1,16 @@
 {
   "name": "claude-stats",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Usage limits (5h / 7d) and ccusage spend, drawn as a status band above the prompt.",
   "author": { "name": "Elio Struyf" },
   "types": "./types/index.d.ts",
   "userConfig": {
+    "showSpend": {
+      "type": "boolean",
+      "title": "Show spend",
+      "description": "Show the session cost and ccusage's today / month spend. Off: only the usage limits are drawn and ccusage never runs.",
+      "default": true
+    },
     "ccusageCommand": {
       "type": "string",
       "title": "ccusage command",

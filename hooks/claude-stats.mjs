@@ -21,11 +21,12 @@ let ticker;
 
 export function register(on, options = {}) {
   const refreshMs = Math.max(10, Number(options.refreshSeconds) || 60) * 1000;
+  const showSpend = options.showSpend !== false;
 
   on("session.start", async ($, e, next) => {
     const result = await next(e);
     await takeUsage($);
-    refreshCosts($, options, 0).catch(() => {});
+    if (showSpend) refreshCosts($, options, 0).catch(() => {});
 
     // Redraw the countdowns every minute, and catch spend from other sessions.
     ticker?.cancel();
@@ -34,7 +35,7 @@ export function register(on, options = {}) {
         .then(() => $.clock.now())
         .then((now) => $.state.set(TICK, now))
         .catch(() => {});
-      refreshCosts($, options, IDLE_REFRESH_MS).catch(() => {});
+      if (showSpend) refreshCosts($, options, IDLE_REFRESH_MS).catch(() => {});
     });
     return result;
   });
@@ -49,7 +50,7 @@ export function register(on, options = {}) {
     const result = await next(e);
     if (!e.agentId) {
       await takeUsage($); // main-loop turns only, not subagents
-      refreshCosts($, options, refreshMs).catch(() => {});
+      if (showSpend) refreshCosts($, options, refreshMs).catch(() => {});
     }
     return result;
   });
@@ -62,14 +63,14 @@ export function register(on, options = {}) {
     await $.state.get(TICK); // subscribe, so the reset countdowns redraw each minute
 
     const limits = usage?.rateLimits ?? [];
-    const hasCost = usage?.sessionUsd !== undefined || costs?.today !== undefined;
-    if (limits.length === 0 && !hasCost) return next(e);
+    const spend = showSpend ? costParts(usage, costs) : null;
+    if (limits.length === 0 && !spend) return next(e);
 
     const now = await $.clock.now();
     const els = $.ui.resolve(e);
     return e.surface === "terminal"
-      ? terminalBand(els, limits, usage, costs, now, e.props?.bodyColumns ?? 120)
-      : desktopBand(els, limits, usage, costs, now);
+      ? terminalBand(els, limits, spend, now, e.props?.bodyColumns ?? 120)
+      : desktopBand(els, limits, spend, now);
   });
 }
 
@@ -143,7 +144,7 @@ function quote(arg) {
 
 // ── Drawing: desktop ────────────────────────────────────────────────────────
 
-function desktopBand({ Box, Text, Svg }, limits, usage, costs, now) {
+function desktopBand({ Box, Text, Svg }, limits, spend, now) {
   const pills = limits.map((l) => {
     const pct = Math.round(l.percentUsed);
     const reset = resetIn(l.resetsAt, now);
@@ -154,13 +155,12 @@ function desktopBand({ Box, Text, Svg }, limits, usage, costs, now) {
     ]);
   });
 
-  const money = costParts(usage, costs);
-  if (money) {
+  if (spend) {
     pills.push(
       pill(Box, [
         Svg({ source: dollarBadge(), alt: "cost", width: 16, height: 16 }),
-        Text({ bold: true, color: GREEN, children: money.session }),
-        Text({ dimColor: true, children: money.rest }),
+        Text({ bold: true, color: GREEN, children: spend.session }),
+        Text({ dimColor: true, children: spend.rest }),
       ]),
     );
   }
@@ -204,7 +204,7 @@ function dollarBadge() {
 
 // ── Drawing: terminal ───────────────────────────────────────────────────────
 
-function terminalBand({ Box, Text }, limits, usage, costs, now, columns) {
+function terminalBand({ Box, Text }, limits, spend, now, columns) {
   const wide = columns >= 80;
   const parts = [];
   const gap = () => parts.length && parts.push(Text({ children: "   " }));
@@ -217,11 +217,10 @@ function terminalBand({ Box, Text }, limits, usage, costs, now, columns) {
     parts.push(Text({ dimColor: true, children: ` ${labelFor(l.kind)}${reset ? ` · resets ${reset}` : ""}` }));
   }
 
-  const money = costParts(usage, costs);
-  if (money) {
+  if (spend) {
     gap();
-    parts.push(Text({ color: GREEN, bold: true, children: money.session }));
-    if (wide) parts.push(Text({ dimColor: true, children: ` ${money.rest}` }));
+    parts.push(Text({ color: GREEN, bold: true, children: spend.session }));
+    if (wide) parts.push(Text({ dimColor: true, children: ` ${spend.rest}` }));
   }
 
   return Box({ flexDirection: "row", paddingX: 1, children: parts });

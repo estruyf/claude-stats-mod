@@ -86,6 +86,21 @@ describe("claude-stats", () => {
     await ui.unmount();
   });
 
+  test("showSpend off draws only the limits and never runs ccusage", { options: { showSpend: false } }, async ($, on) => {
+    const { clock, runs } = stubWorld(on);
+    await $.session.start({ surface: "desktop", isInteractive: true, cwd: "/work" } as any);
+    await clock.settle();
+    await $.turn.complete({ reason: "answer", answer: "ok", durationMs: 1 } as any);
+    await clock.advance(15 * MIN);
+
+    const ui = await mountBand($, "desktop");
+    expect(runs).toHaveLength(0);
+    expect(await ui.findAll({ type: "Svg" })).toHaveLength(2);
+    expect(await ui.find({ type: "Text", text: "14%" })).toBeDefined();
+    expect(await ui.find({ type: "Text", text: /\$/ })).toBeUndefined();
+    await ui.unmount();
+  });
+
   test("ccusage reruns after a turn only once the refresh interval passed", async ($, on) => {
     const { clock, runs } = stubWorld(on);
     await $.session.start({ surface: "desktop", isInteractive: true, cwd: "/work" } as any);

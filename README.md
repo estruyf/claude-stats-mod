@@ -43,6 +43,7 @@ Set them with `/config` or under `pluginConfigs["claude-stats"].options` in sett
 
 | Option | Default | |
 | --- | --- | --- |
+| `showSpend` | `true` | Show the spend pill. Turn it off to see only the usage limits; ccusage then never runs. |
 | `ccusageCommand` | `npx -y ccusage@latest` | Tried directly, then through your login shell so nvm/volta PATHs resolve in the desktop app. |
 | `refreshSeconds` | `60` | Minimum time between ccusage runs after a turn. While idle it refreshes every 10 minutes. |
 
