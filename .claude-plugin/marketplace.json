@@ -1,0 +1,6 @@
+{
+  "name": "claude-stats-mod",
+  "owner": { "name": "Elio Struyf" },
+  "description": "Claude Code mods by Elio Struyf.",
+  "plugins": [{ "name": "claude-stats", "source": "./" }]
+}

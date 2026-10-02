@@ -1,0 +1,21 @@
+{
+  "name": "claude-stats",
+  "version": "0.1.0",
+  "description": "Usage limits (5h / 7d) and ccusage spend, drawn as a status band above the prompt.",
+  "author": { "name": "Elio Struyf" },
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "ccusageCommand": {
+      "type": "string",
+      "title": "ccusage command",
+      "description": "How to run ccusage. Tried directly first, then through your login shell (so nvm/volta PATHs work in the desktop app).",
+      "default": "npx -y ccusage@latest"
+    },
+    "refreshSeconds": {
+      "type": "number",
+      "title": "ccusage refresh interval (seconds)",
+      "description": "Minimum time between ccusage runs. ccusage rescans your session logs on every run.",
+      "default": 60
+    }
+  }
+}
